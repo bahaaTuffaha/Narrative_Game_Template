@@ -1,5 +1,7 @@
+import 'package:flutter_app/widgets/dialogBlock.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
+import '../models/levels.dart';
 
 class NarrativeBar extends StatefulWidget {
   NarrativeBar({Key? key}) : super(key: key);
@@ -12,11 +14,20 @@ class _NarrativeBarState extends State<NarrativeBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      height: MediaQuery.of(context).size.height,
-      child: Image(
-        image: AssetImage("assets/images/dialogBack.png"),
+      // decoration: BoxDecoration(color: Colors.amber),
+      padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+      decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/dialogBack.png"),fit: BoxFit.fill,)
       ),
-    );
+      width: 250,
+      height: MediaQuery.of(context).size.height,
+      child: ListView(
+        children: level1.entries.map((entry) {
+          return DialogBlock(
+            speakerName: entry.key,
+            text: entry.value,
+          );
+        }).toList(),
+      ),
+      );
   }
 }

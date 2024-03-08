@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/screens/home/home.dart';
+import 'package:flutter_app/widgets/sidebar.dart';
 
 void main() {
   runApp(
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
                         image: AssetImage("assets/images/lev1_back.jpg"),
                         fit: BoxFit.cover)),
               ),
-              Container()
+              Positioned(child: NarrativeBar(),right: 0 ,),
             ],
           ),
         ),
