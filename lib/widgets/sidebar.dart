@@ -22,10 +22,11 @@ class _NarrativeBarState extends State<NarrativeBar> {
       height: MediaQuery.of(context).size.height,
       child: ListView(
         children: level1.entries.map((entry) {
-          return DialogBlock(
+         return Column(children: [DialogBlock(
             speakerName: entry.key,
-            text: entry.value,
-          );
+            dialogText: entry.value,
+          ),const Gap(20)],crossAxisAlignment: CrossAxisAlignment.start,);
+           
         }).toList(),
       ),
       );
