@@ -15,12 +15,17 @@ class DialogBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          speakerName,
-          style: const TextStyle(color: Colors.white),
+          speakerName.toUpperCase(),
+          style: const TextStyle(
+              color: Colors.white, fontFamily: "Arlt", fontSize: 20),
         ),
         Text(
           dialogText,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Color(0xffC5CBB6), //0xff + hex
+            fontFamily: "Arlt",
+            fontSize: 20,
+          ),
         )
       ],
     ));

@@ -1,1 +1,4 @@
-var level1 = {"kim":"asdasdasdasd","sam":"another text"};
+var level1 = {
+  "GARTE, THE CAFETERIA MANAGER": "asdasdasdasd",
+  "sam": "another text"
+};
