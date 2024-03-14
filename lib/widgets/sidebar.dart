@@ -1,7 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_app/widgets/dialogBlock.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
 import '../models/levels.dart';
+import 'package:yaml/yaml.dart';
 
 class NarrativeBar extends StatefulWidget {
   NarrativeBar({Key? key}) : super(key: key);
@@ -11,8 +13,25 @@ class NarrativeBar extends StatefulWidget {
 }
 
 class _NarrativeBarState extends State<NarrativeBar> {
+  dynamic? yamlData;
+
+  @override
+  void initState() {
+    // called once
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    String data = await rootBundle.loadString('assets/data.yaml');
+    setState(() {
+      yamlData = loadYaml(data);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(yamlData?["Chapters"][0]["Diablocks"][0]);
     return Container(
       // decoration: BoxDecoration(color: Colors.amber),
       padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
