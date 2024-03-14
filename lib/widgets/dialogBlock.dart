@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/Choices.dart';
 
 class DialogBlock extends StatelessWidget {
   final String speakerName;
   final String dialogText;
+  final List dialogChoices;
 
   const DialogBlock(
-      {Key? key, required this.speakerName, required this.dialogText})
+      {Key? key, required this.speakerName, required this.dialogText,required this.dialogChoices})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+    Container(
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -28,6 +33,12 @@ class DialogBlock extends StatelessWidget {
           ),
         )
       ],
-    ));
+    )),
+    Choices(choices:dialogChoices ,)
+],
+
+    );
+    
+
   }
 }

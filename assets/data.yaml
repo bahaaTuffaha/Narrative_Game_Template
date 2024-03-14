@@ -17,8 +17,3 @@ Chapters:
         Dialog: "Nice choice here it is.."
         Background: *background1
         Sound: ""
-        Answers:
-          - Text: "Take the red watch"
-            GoToDiablock: "offering"
-          - Text: "Take the blue watch"
-            GoToDiablock: " "
