@@ -36,33 +36,38 @@ class _NarrativeBarState extends State<NarrativeBar> {
     setState(() {
       // debugPrint(chapters[currentChapter]["Diablocks"].runtimeType.toString() +
       //     "test pelsea work");
-      var block = chapters[currentChapter]["Diablocks"];
-      //has answers
-      if (gotoDiablock != null) {
-        YamlMap? result = block.firstWhere(
-            (element) => element['RefName'] == gotoDiablock,
-            orElse: () => null);
+      try {
+        var block = chapters[currentChapter]["Diablocks"];
+        //has answers
+        if (gotoDiablock != null) {
+          YamlMap? result = block.firstWhere(
+              (element) => element['RefName'] == gotoDiablock,
+              orElse: () => null);
 
-        if (result != null) {
-          currentDialogs.add(result);
-          showContinue = false;
-        }
-      } else {
-        //next to the GoToDiablock
-        YamlMap? result = block.firstWhere(
-            (element) =>
-                element['RefName'] ==
-                currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
-            orElse: () => null);
+          if (result != null) {
+            currentDialogs.add(result);
+            showContinue = false;
+          }
+        } else {
+          //next to the GoToDiablock
+          YamlMap? result = block.firstWhere(
+              (element) =>
+                  element['RefName'] ==
+                  currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
+              orElse: () => null);
 
-        if (result != null) {
-          currentDialogs.add(result);
-          showContinue = true;
+          if (result != null) {
+            currentDialogs.add(result);
+            showContinue = true;
+          }
         }
-      }
-      //go to next chapter
-      if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] == "END") {
-        currentChapter++;
+        //go to next chapter
+        if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] ==
+            "END") {
+          currentChapter++;
+        }
+      } catch (e) {
+        debugPrint("error: " + e.toString());
       }
     });
   }

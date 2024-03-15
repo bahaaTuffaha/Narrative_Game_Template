@@ -17,7 +17,7 @@ Chapters:
         Dialog: "Nice choice here it is.."
         Background: *background1
         Sound: ""
-        GoToDiablock: "END"
+        GoToDiablock: "offering"
       - RefName: "blueWatch"
         Speaker: "bahaa"
         Dialog: "Who do you think you are to take something like this?"

@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 class Choices extends StatelessWidget {
   final List choices;
   final void Function(dynamic) nextDialog;
-  const Choices({super.key, required this.choices, required this.nextDialog});
+  final void Function(String) setFinal;
+  const Choices(
+      {super.key,
+      required this.choices,
+      required this.nextDialog,
+      required this.setFinal});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +17,10 @@ class Choices extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: choices.map((choice) {
             return TextButton(
-                onPressed: () => nextDialog(choice["GoToDiablock"]),
+                onPressed: () => () {
+                      nextDialog(choice["GoToDiablock"]);
+                      setFinal(choice["Text"]);
+                    }(),
                 child: Text(choice["Text"]));
           }).toList()),
     );
