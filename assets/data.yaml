@@ -11,9 +11,16 @@ Chapters:
           - Text: "[Take the red watch]"
             GoToDiablock: "redWatch"
           - Text: "[Take the blue watch]"
-            GoToDiablock: " "
+            GoToDiablock: "blueWatch"
       - RefName: "redWatch"
         Speaker: "bahaa"
         Dialog: "Nice choice here it is.."
         Background: *background1
         Sound: ""
+        GoToDiablock: "END"
+      - RefName: "blueWatch"
+        Speaker: "bahaa"
+        Dialog: "Who do you think you are to take something like this?"
+        Background: *background1
+        Sound: ""
+        GoToDiablock: "END"

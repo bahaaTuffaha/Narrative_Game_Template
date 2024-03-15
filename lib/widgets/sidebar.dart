@@ -5,51 +5,76 @@ import 'package:gap/gap.dart';
 import 'package:yaml/yaml.dart';
 
 class NarrativeBar extends StatefulWidget {
- NarrativeBar({Key? key}) : super(key: key);
+  NarrativeBar({Key? key}) : super(key: key);
 
- @override
- State<NarrativeBar> createState() => _NarrativeBarState();
+  @override
+  State<NarrativeBar> createState() => _NarrativeBarState();
 }
 
 class _NarrativeBarState extends State<NarrativeBar> {
- dynamic? yamlData;
+  dynamic? chapters;
+  var currentDialogs = [];
+  int currentChapter = 0;
+  bool showContinue = true;
 
- @override
- void initState() {
+  @override
+  void initState() {
     super.initState();
     loadData();
- }
+  }
 
- Future<void> loadData() async {
+  Future<void> loadData() async {
     String data = await rootBundle.loadString('assets/data.yaml');
     setState(() {
-      yamlData = loadYaml(data);
+      chapters = loadYaml(data);
+      chapters = chapters["Chapters"] as List? ?? [];
+      currentDialogs.add(chapters[currentChapter]["Diablocks"][0]);
     });
- }
+  }
 
- @override
- Widget build(BuildContext context) {
-    if (yamlData == null) {
-      return CircularProgressIndicator(); // Loading indicator
+  void nextDialog(var gotoDiablock) {
+    setState(() {
+      // debugPrint(chapters[currentChapter]["Diablocks"].runtimeType.toString() +
+      //     "test pelsea work");
+      var block = chapters[currentChapter]["Diablocks"];
+      //has answers
+      if (gotoDiablock != null) {
+        YamlMap? result = block.firstWhere(
+            (element) => element['RefName'] == gotoDiablock,
+            orElse: () => null);
+
+        if (result != null) {
+          currentDialogs.add(result);
+          showContinue = false;
+        }
+      } else {
+        //next to the GoToDiablock
+        YamlMap? result = block.firstWhere(
+            (element) =>
+                element['RefName'] ==
+                currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
+            orElse: () => null);
+
+        if (result != null) {
+          currentDialogs.add(result);
+          showContinue = true;
+        }
+      }
+      //go to next chapter
+      if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] == "END") {
+        currentChapter++;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (chapters == null) {
+      return const CircularProgressIndicator(); // Loading indicator
     }
 
-    var chapters = yamlData["Chapters"] as List? ?? [];
-    var chapterWidgets = chapters.map((chapter) {
-      var diablocks = chapter["Diablocks"] as List? ?? [];
-      var diablockWidgets = diablocks.map((diablock) {
-
-        return DialogBlock(
-          speakerName: diablock["Speaker"],
-          dialogText: diablock["Dialog"],
-          dialogChoices: diablock["Answers"]?? [],
-        );
-      }).toList();
-
-      return diablockWidgets;
-    }).expand((x) => x).toList(); // Flatten the list of lists into a single list
-
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage("assets/images/dialogBack.png"),
@@ -58,9 +83,30 @@ class _NarrativeBarState extends State<NarrativeBar> {
       ),
       width: MediaQuery.of(context).size.width * 0.35, // width of the thing
       height: MediaQuery.of(context).size.height,
-      child: ListView(
-        children: chapterWidgets,
-      ),
+      child: ListView(children: [
+        ...currentDialogs.map((diablock) {
+          return DialogBlock(
+            speakerName: diablock["Speaker"],
+            dialogText: diablock["Dialog"],
+            dialogChoices: diablock["Answers"] ?? [],
+            nextDialog: nextDialog,
+          );
+        }),
+        InkWell(
+            onTap: () => nextDialog(null),
+            child: !showContinue
+                ? Container(
+                    height: 40,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                    ),
+                    child: const Text(
+                      "Continue ►",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                : SizedBox.shrink())
+      ]),
     );
- }
+  }
 }
