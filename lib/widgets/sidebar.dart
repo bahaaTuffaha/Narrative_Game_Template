@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/widgets/dialogBlock.dart';
@@ -87,7 +88,7 @@ class _NarrativeBarState extends State<NarrativeBar> {
         ),
       ),
       width: MediaQuery.of(context).size.width * 0.35, // width of the thing
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height - 20,
       child: ListView(children: [
         ...currentDialogs.map((diablock) {
           return DialogBlock(
@@ -98,19 +99,26 @@ class _NarrativeBarState extends State<NarrativeBar> {
           );
         }),
         InkWell(
+            // continue bar
             onTap: () => nextDialog(null),
             child: !showContinue
                 ? Container(
+                    alignment: Alignment.centerLeft,
                     height: 40,
+                    margin: EdgeInsets.only(bottom: 100),
                     decoration: const BoxDecoration(
-                      color: Colors.red,
+                      color: Color(0xff88230C),
                     ),
                     child: const Text(
                       "Continue ►",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontFamily: "Arlt",
+                      ),
                     ),
                   )
-                : SizedBox.shrink())
+                : Gap(100))
       ]),
     );
   }

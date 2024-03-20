@@ -4,11 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/screens/home/home.dart';
 import 'package:flutter_app/widgets/sidebar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   runApp(
-    MaterialApp(
-      home: MyApp(),
+    const ProviderScope(
+      child: MaterialApp(
+        home: MyApp(),
+      ),
     ),
   );
   SystemChrome.setPreferredOrientations([
@@ -46,7 +49,10 @@ class MyApp extends StatelessWidget {
                         image: AssetImage("assets/images/lev1_back.jpg"),
                         fit: BoxFit.cover)),
               ),
-              Positioned(child: NarrativeBar(),right: 0 ,),
+              Positioned(
+                child: NarrativeBar(),
+                right: 0,
+              ),
             ],
           ),
         ),
