@@ -20,7 +20,8 @@ class DialogBlock extends StatefulWidget {
   State<DialogBlock> createState() => _DialogBlockState();
 }
 
-class _DialogBlockState extends State<DialogBlock> {
+class _DialogBlockState extends State<DialogBlock>
+    with AutomaticKeepAliveClientMixin {
   bool isAnswered = false;
   String currentAnswer = "";
 
@@ -32,7 +33,11 @@ class _DialogBlockState extends State<DialogBlock> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
