@@ -46,9 +46,11 @@ class MyApp extends ConsumerWidget {
                 width: MediaQuery.of(context).size.width,
                 // width: MediaQuery.of(context).size.width * 0.65,
                 alignment: Alignment.centerLeft,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
+                    color: Colors.black,
                     image: DecorationImage(
-                        image: AssetImage("assets/images/lev1_back.jpg"),
+                        image: AssetImage(
+                            ref.watch(store)['Background'].toString()),
                         fit: BoxFit.cover)),
               ),
               Positioned(

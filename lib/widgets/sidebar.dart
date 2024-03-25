@@ -33,6 +33,13 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
     };
   }
 
+  void updateBackImage(String newImagePath) {
+    ref.read(store.notifier).state = {
+      ...ref.read(store.notifier).state,
+      'Background': newImagePath,
+    };
+  }
+
   Future<void> loadData() async {
     String data = await rootBundle.loadString('assets/data.yaml');
     setState(() {
@@ -43,6 +50,8 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
 
     updateSpeakerImage(
         chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
+    updateBackImage(
+        chapters[currentChapter]["Diablocks"][0]["Background"] ?? "");
   }
 
   void nextDialog(var gotoDiablock) {
@@ -62,6 +71,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
             showContinue = false;
           });
           updateSpeakerImage(result["SpeakerImage"] ?? "");
+          updateBackImage(result["Background"] ?? "");
         }
       } else {
         //next to the GoToDiablock
@@ -77,6 +87,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
             showContinue = true;
           });
           updateSpeakerImage(result["SpeakerImage"] ?? "");
+          updateBackImage(result["Background"] ?? "");
         }
       }
       //go to next chapter
