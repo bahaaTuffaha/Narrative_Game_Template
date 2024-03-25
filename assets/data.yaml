@@ -3,6 +3,7 @@ Chapters:
     Diablocks:
       - RefName: "offering"
         Speaker: "bahaa"
+        SpeakerImage: "assets/images/person1.jpg"
         Dialog: "Here's my collection of watches any of these you find to your liking?"
         Background: &background1 "assets/images/lev1_back.jpg"
         Sound: ""
@@ -14,13 +15,16 @@ Chapters:
             GoToDiablock: "blueWatch"
       - RefName: "redWatch"
         Speaker: "bahaa"
+        SpeakerImage: "assets/images/person2.jpg"
         Dialog: "Nice choice here it is.."
         Background: *background1
         Sound: ""
         GoToDiablock: "offering"
       - RefName: "blueWatch"
         Speaker: "bahaa"
-        Dialog: "Who do you think you are to take something like this?"
+        SpeakerImage: "assets/images/person3.jpg"
+        Dialog: "Who do you think you are to take something like this!!!"
         Background: *background1
         Sound: ""
-        GoToDiablock: "END"
+        GoToDiablock: "offering"
+        # GoToDiablock: "END"

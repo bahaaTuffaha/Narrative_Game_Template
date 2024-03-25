@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/screens/home/home.dart';
+import 'package:flutter_app/store/riverpod.dart';
 import 'package:flutter_app/widgets/sidebar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,11 +25,11 @@ void main() {
 //git remote set-url origin git@github.com:username/repo.git
 //git push origin master
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       home: Scaffold(
         // appBar: AppBar(
@@ -50,9 +52,31 @@ class MyApp extends StatelessWidget {
                         fit: BoxFit.cover)),
               ),
               Positioned(
-                child: NarrativeBar(),
                 right: 0,
+                child: NarrativeBar(),
               ),
+              ref.watch(store)['currentSpeakerImage'] != ""
+                  ? Positioned(
+                      right: (MediaQuery.of(context).size.width * 0.35),
+                      top: 20,
+                      child: Container(
+                        width: 120,
+                        height: 160,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage(ref
+                                    .watch(store)['currentSpeakerImage']
+                                    .toString()),
+                                fit: BoxFit.cover),
+                            border: const Border.symmetric(
+                                horizontal: BorderSide(
+                                    width: 5, color: Color(0xff232221)),
+                                vertical: BorderSide(
+                                    width: 5, color: Color(0xff232221))),
+                            color: Color(0xff232221)),
+                      ),
+                    )
+                  : const SizedBox.shrink()
             ],
           ),
         ),

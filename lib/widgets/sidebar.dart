@@ -1,18 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/store/riverpod.dart';
 import 'package:flutter_app/widgets/dialogBlock.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:yaml/yaml.dart';
 
-class NarrativeBar extends StatefulWidget {
+class NarrativeBar extends ConsumerStatefulWidget {
   NarrativeBar({Key? key}) : super(key: key);
 
   @override
-  State<NarrativeBar> createState() => _NarrativeBarState();
+  ConsumerState<NarrativeBar> createState() => _NarrativeBarState();
 }
 
-class _NarrativeBarState extends State<NarrativeBar> {
+class _NarrativeBarState extends ConsumerState<NarrativeBar> {
   dynamic? chapters;
   var currentDialogs = [];
   int currentChapter = 0;
@@ -24,6 +26,13 @@ class _NarrativeBarState extends State<NarrativeBar> {
     loadData();
   }
 
+  void updateSpeakerImage(String newImagePath) {
+    ref.read(store.notifier).state = {
+      ...ref.read(store.notifier).state,
+      'currentSpeakerImage': newImagePath,
+    };
+  }
+
   Future<void> loadData() async {
     String data = await rootBundle.loadString('assets/data.yaml');
     setState(() {
@@ -31,46 +40,54 @@ class _NarrativeBarState extends State<NarrativeBar> {
       chapters = chapters["Chapters"] as List? ?? [];
       currentDialogs.add(chapters[currentChapter]["Diablocks"][0]);
     });
+
+    updateSpeakerImage(
+        chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
   }
 
   void nextDialog(var gotoDiablock) {
-    setState(() {
-      // debugPrint(chapters[currentChapter]["Diablocks"].runtimeType.toString() +
-      //     "test pelsea work");
-      try {
-        var block = chapters[currentChapter]["Diablocks"];
-        //has answers
-        if (gotoDiablock != null) {
-          YamlMap? result = block.firstWhere(
-              (element) => element['RefName'] == gotoDiablock,
-              orElse: () => null);
+    // debugPrint(chapters[currentChapter]["Diablocks"].runtimeType.toString() +
+    //     "test pelsea work");
+    try {
+      var block = chapters[currentChapter]["Diablocks"];
+      //has answers
+      if (gotoDiablock != null) {
+        YamlMap? result = block.firstWhere(
+            (element) => element['RefName'] == gotoDiablock,
+            orElse: () => null);
 
-          if (result != null) {
+        if (result != null) {
+          setState(() {
             currentDialogs.add(result);
             showContinue = false;
-          }
-        } else {
-          //next to the GoToDiablock
-          YamlMap? result = block.firstWhere(
-              (element) =>
-                  element['RefName'] ==
-                  currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
-              orElse: () => null);
+          });
+          updateSpeakerImage(result["SpeakerImage"] ?? "");
+        }
+      } else {
+        //next to the GoToDiablock
+        YamlMap? result = block.firstWhere(
+            (element) =>
+                element['RefName'] ==
+                currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
+            orElse: () => null);
 
-          if (result != null) {
+        if (result != null) {
+          setState(() {
             currentDialogs.add(result);
             showContinue = true;
-          }
+          });
+          updateSpeakerImage(result["SpeakerImage"] ?? "");
         }
-        //go to next chapter
-        if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] ==
-            "END") {
-          currentChapter++;
-        }
-      } catch (e) {
-        debugPrint("error: " + e.toString());
       }
-    });
+      //go to next chapter
+      if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] == "END") {
+        setState(() {
+          currentChapter++;
+        });
+      }
+    } catch (e) {
+      debugPrint("error: " + e.toString());
+    }
   }
 
   @override
