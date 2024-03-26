@@ -24,7 +24,7 @@ Chapters:
         Speaker: "bahaa"
         SpeakerImage: "assets/images/person3.jpg"
         Dialog: "Who do you think you are to take something like this!!!"
-        Background: *background1
+        Background: "assets/images/ref.png"
         Sound: ""
         GoToDiablock: "offering"
         # GoToDiablock: "END"

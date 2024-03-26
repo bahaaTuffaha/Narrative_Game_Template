@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/screens/home/home.dart';
 import 'package:flutter_app/store/riverpod.dart';
+import 'package:flutter_app/widgets/fadeIn.dart';
 import 'package:flutter_app/widgets/sidebar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,17 +43,10 @@ class MyApp extends ConsumerWidget {
           child: Stack(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height, //double.infinity
-                width: MediaQuery.of(context).size.width,
-                // width: MediaQuery.of(context).size.width * 0.65,
-                alignment: Alignment.centerLeft,
-                decoration: BoxDecoration(
-                    color: Colors.black,
-                    image: DecorationImage(
-                        image: AssetImage(
-                            ref.watch(store)['Background'].toString()),
-                        fit: BoxFit.cover)),
-              ),
+                  color: Colors.black,
+                  child: FadeInBackground(
+                    background: ref.watch(store)['Background'].toString(),
+                  )),
               Positioned(
                 right: 0,
                 child: NarrativeBar(),

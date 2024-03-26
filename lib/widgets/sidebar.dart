@@ -19,6 +19,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
   var currentDialogs = [];
   int currentChapter = 0;
   bool showContinue = true;
+  final scrollController = ScrollController();
 
   @override
   void initState() {
@@ -72,6 +73,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
           });
           updateSpeakerImage(result["SpeakerImage"] ?? "");
           updateBackImage(result["Background"] ?? "");
+          scrollToBottom();
         }
       } else {
         //next to the GoToDiablock
@@ -88,6 +90,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
           });
           updateSpeakerImage(result["SpeakerImage"] ?? "");
           updateBackImage(result["Background"] ?? "");
+          scrollToBottom();
         }
       }
       //go to next chapter
@@ -95,10 +98,19 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
         setState(() {
           currentChapter++;
         });
+        scrollToBottom();
       }
     } catch (e) {
       debugPrint("error: " + e.toString());
     }
+  }
+
+  void scrollToBottom() {
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent + 300,
+      duration: Duration(seconds: 1), // Adjust animation duration
+      curve: Curves.ease, // Customize animation curve (optional)
+    );
   }
 
   @override
@@ -117,7 +129,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
       ),
       width: MediaQuery.of(context).size.width * 0.35, // width of the thing
       height: MediaQuery.of(context).size.height - 20,
-      child: ListView(children: [
+      child: ListView(controller: scrollController, children: [
         ...currentDialogs.map((diablock) {
           return DialogBlock(
             speakerName: diablock["Speaker"],
