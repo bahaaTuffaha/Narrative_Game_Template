@@ -1,0 +1,30 @@
+Chapters:
+  - ChapterName: "The beginning"
+    Diablocks:
+      - RefName: "offering"
+        Speaker: "bahaa"
+        SpeakerImage: "assets/images/person1.jpg"
+        Dialog: "Here's my collection of watches any of these you find to your liking?"
+        Background: &background1 "assets/images/lev1_back.jpg"
+        Sound: ""
+        Delay: 2.0
+        Answers:
+          - Text: "[Take the red watch]"
+            GoToDiablock: "redWatch"
+          - Text: "[Take the blue watch]"
+            GoToDiablock: "blueWatch"
+      - RefName: "redWatch"
+        Speaker: "bahaa"
+        SpeakerImage: "assets/images/person2.jpg"
+        Dialog: "Nice choice here it is.."
+        Background: *background1
+        Sound: ""
+        GoToDiablock: "offering"
+      - RefName: "blueWatch"
+        Speaker: "bahaa"
+        SpeakerImage: "assets/images/person3.jpg"
+        Dialog: "Who do you think you are to take something like this!!!"
+        Background: "assets/images/ref.png"
+        Sound: ""
+        GoToDiablock: "offering"
+        # GoToDiablock: "END"
