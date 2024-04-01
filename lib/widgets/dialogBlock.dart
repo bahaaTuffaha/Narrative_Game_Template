@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/widgets/FinalAnswer.dart';
 import 'package:flutter_app/widgets/choices.dart';
@@ -50,12 +51,20 @@ class _DialogBlockState extends State<DialogBlock>
               style: const TextStyle(
                   color: Colors.white, fontFamily: "Arlt", fontSize: 20),
             ),
-            Text(
-              widget.dialogText,
-              style: const TextStyle(
-                color: Color(0xffC5CBB6), //0xff + hex
-                fontFamily: "Arlt",
-                fontSize: 20,
+            SizedBox(
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  color: Color(0xffC5CBB6), //0xff + hex
+                  fontFamily: "Arlt",
+                  fontSize: 20,
+                ),
+                child: AnimatedTextKit(
+                  totalRepeatCount: 1,
+                  displayFullTextOnTap: true,
+                  animatedTexts: [
+                    TyperAnimatedText(widget.dialogText),
+                  ],
+                ),
               ),
             )
           ],
