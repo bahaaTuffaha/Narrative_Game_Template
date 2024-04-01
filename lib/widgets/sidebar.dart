@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
   int currentChapter = 0;
   bool showContinue = true;
   final scrollController = ScrollController();
+  final player = AudioPlayer();
 
   @override
   void initState() {
@@ -140,6 +142,8 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
         }),
         InkWell(
             // continue bar
+            onTapUp: (TapUpDetails details) =>
+                {player.play(AssetSource("audio/click.mp3"))},
             onTap: () => nextDialog(null),
             child: !showContinue
                 ? Container(
