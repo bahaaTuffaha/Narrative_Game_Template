@@ -19,7 +19,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
   dynamic? chapters;
   var currentDialogs = [];
   int currentChapter = 0;
-  bool showContinue = true;
+  bool showContinue = false;
   final scrollController = ScrollController();
   final player = AudioPlayer();
 
@@ -27,6 +27,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
   void initState() {
     super.initState();
     loadData();
+    isChapterVisible();
   }
 
   void updateSpeakerImage(String newImagePath) {
@@ -43,6 +44,24 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
     };
   }
 
+  void isChapterVisible() {
+    Future.delayed(Duration(seconds: 4), () {
+      ref.read(store.notifier).state = {
+        ...ref.read(store.notifier).state,
+        'chapterNameVisible': false,
+      };
+    });
+  }
+
+  void updateChapterName(String name) {
+    ref.read(store.notifier).state = {
+      ...ref.read(store.notifier).state,
+      'currentChapterName': name,
+      'chapterNameVisible': true,
+    };
+    isChapterVisible();
+  }
+
   Future<void> loadData() async {
     String data = await rootBundle.loadString('assets/data.yaml');
     setState(() {
@@ -50,6 +69,12 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
       chapters = chapters["Chapters"] as List? ?? [];
       currentDialogs.add(chapters[currentChapter]["Diablocks"][0]);
     });
+    //check if the first diablock has answers
+    if (chapters[currentChapter]['Diablocks'][0]["Answers"].length > 0) {
+      setState(() {
+        showContinue = false;
+      });
+    }
 
     updateSpeakerImage(
         chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
@@ -68,23 +93,11 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
             (element) => element['RefName'] == gotoDiablock,
             orElse: () => null);
 
-        if (result != null) {
+        if (result?['Answers'] == null) {
           setState(() {
-            currentDialogs.add(result);
-            showContinue = false;
+            currentDialogs.clear();
           });
-          updateSpeakerImage(result["SpeakerImage"] ?? "");
-          updateBackImage(result["Background"] ?? "");
-          scrollToBottom();
         }
-      } else {
-        //next to the GoToDiablock
-        YamlMap? result = block.firstWhere(
-            (element) =>
-                element['RefName'] ==
-                currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
-            orElse: () => null);
-
         if (result != null) {
           setState(() {
             currentDialogs.add(result);
@@ -96,11 +109,39 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
         }
       }
       //go to next chapter
-      if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] == "END") {
+      else if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] ==
+          "END") {
         setState(() {
           currentChapter++;
+          currentDialogs.add(chapters[currentChapter]["Diablocks"][0]);
+          showContinue = true;
         });
-        scrollToBottom();
+        updateChapterName(chapters[currentChapter]["ChapterName"]);
+        updateSpeakerImage(
+            chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
+        updateBackImage(
+            chapters[currentChapter]["Diablocks"][0]["Background"] ?? "");
+      } else {
+        //next to the GoToDiablock
+        YamlMap? result = block.firstWhere(
+            (element) =>
+                element['RefName'] ==
+                currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
+            orElse: () => null);
+
+        if (result != null) {
+          setState(() {
+            currentDialogs.add(result);
+            if (result['Answers'] != null) {
+              showContinue = false;
+            } else {
+              showContinue = true;
+            }
+          });
+          updateSpeakerImage(result["SpeakerImage"] ?? "");
+          updateBackImage(result["Background"] ?? "");
+          scrollToBottom();
+        }
       }
     } catch (e) {
       debugPrint("error: " + e.toString());
@@ -145,7 +186,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
             onTapUp: (TapUpDetails details) =>
                 {player.play(AssetSource("audio/click.mp3"))},
             onTap: () => nextDialog(null),
-            child: !showContinue
+            child: showContinue
                 ? Container(
                     alignment: Alignment.centerLeft,
                     height: 40,

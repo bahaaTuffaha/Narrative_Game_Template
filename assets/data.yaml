@@ -4,7 +4,7 @@ Chapters:
       - RefName: "offering"
         Speaker: "bahaa"
         SpeakerImage: "assets/images/person1.jpg"
-        Dialog: "Here's my collection of watches any of these you find to your liking?"
+        Dialog: "'Here's my collection of watches any of these you find to your liking?'"
         Background: &background1 "assets/images/lev1_back.jpg"
         Sound: ""
         Delay: 2.0
@@ -16,15 +16,36 @@ Chapters:
       - RefName: "redWatch"
         Speaker: "bahaa"
         SpeakerImage: "assets/images/person2.jpg"
-        Dialog: "Nice choice here it is.."
+        Dialog: '"Nice choice here it is.."'
         Background: *background1
         Sound: ""
         GoToDiablock: "offering"
       - RefName: "blueWatch"
         Speaker: "bahaa"
         SpeakerImage: "assets/images/person3.jpg"
-        Dialog: "Who do you think you are to take something like this!!!"
+        Dialog: '"Who do you think you are to take something like this!!!"'
         Background: "assets/images/ref.png"
         Sound: ""
+        GoToDiablock: "runningAway"
+      - RefName: "runningAway"
+        Speaker: "Narrator"
+        SpeakerImage: "assets/images/person3.jpg"
+        Dialog: "You ran away from this place and went to your room."
+        Sound: ""
+        GoToDiablock: "END"
+  - ChapterName: "Who am I"
+    Diablocks:
+      - RefName: "whoIam"
+        Speaker: "Narrator"
+        SpeakerImage: "assets/images/you.jpg"
+        Dialog: "I'm trying to remember who am I"
+        # Background: *background1
+        Sound: ""
+        GoToDiablock: "whoIam2"
+      - RefName: "whoIam2"
+        Speaker: "You"
+        SpeakerImage: "assets/images/you.jpg"
+        Dialog: "'I have to think deeper through my soul.'"
+        # Background: *background1
+        Sound: ""
         GoToDiablock: "offering"
-        # GoToDiablock: "END"

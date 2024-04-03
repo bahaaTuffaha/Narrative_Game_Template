@@ -1,3 +1,5 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/screens/home/home.dart';
 import 'package:flutter_app/store/riverpod.dart';
+import 'package:flutter_app/widgets/NextChapter.dart';
 import 'package:flutter_app/widgets/fadeIn.dart';
 import 'package:flutter_app/widgets/sidebar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,7 +75,8 @@ class MyApp extends ConsumerWidget {
                             color: Color(0xff232221)),
                       ),
                     )
-                  : const SizedBox.shrink()
+                  : const SizedBox.shrink(),
+              NextChapter()
             ],
           ),
         ),
