@@ -1,7 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/Choices.dart';
 import 'package:flutter_app/widgets/FinalAnswer.dart';
-import 'package:flutter_app/widgets/choices.dart';
 
 class DialogBlock extends StatefulWidget {
   final String speakerName;

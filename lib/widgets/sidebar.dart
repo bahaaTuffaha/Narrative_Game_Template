@@ -172,7 +172,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
       ),
       width: MediaQuery.of(context).size.width * 0.35, // width of the thing
       height: MediaQuery.of(context).size.height - 20,
-      child: ListView(controller: scrollController, children: [
+      child: ListView(physics: const ScrollPhysics(), controller: scrollController, children: [
         ...currentDialogs.map((diablock) {
           return DialogBlock(
             speakerName: diablock["Speaker"],
