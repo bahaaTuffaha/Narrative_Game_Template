@@ -5,15 +5,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class Choices extends ConsumerWidget {
   final List choices;
   final void Function(dynamic) nextDialog;
-  final void Function(String) setFinal;
-  const Choices(
-      {super.key,
-      required this.choices,
-      required this.nextDialog,
-      required this.setFinal});
+  const Choices({super.key, required this.choices, required this.nextDialog});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    void setFinal(String currentAns) {
+      final currentState = ref.read(store.notifier).state;
+      final currentDialogs = List<dynamic>.from(currentState['currentDialogs']);
+      final lastIndex = currentDialogs.length - 2;
+
+      if (lastIndex >= 0) {
+        currentDialogs[lastIndex]['currentAnswer'] = currentAns;
+        currentDialogs[lastIndex]['isAnswered'] = true;
+        ref.read(store.notifier).state = {
+          ...currentState,
+          'currentDialogs': currentDialogs,
+        };
+      }
+    }
+
     return Container(
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

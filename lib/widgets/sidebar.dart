@@ -17,7 +17,6 @@ class NarrativeBar extends ConsumerStatefulWidget {
 
 class _NarrativeBarState extends ConsumerState<NarrativeBar> {
   dynamic? chapters;
-  var currentDialogs = [];
   int currentChapter = 0;
   bool showContinue = false;
   final scrollController = ScrollController();
@@ -62,12 +61,20 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
     isChapterVisible();
   }
 
+  void addDialog(Map dialog) {
+    Map newDialog = Map.from(dialog);
+    newDialog['isAnswered'] = false;
+    newDialog['currentAnswer'] = "";
+
+    ref.read(store.notifier).state['currentDialogs'].add(newDialog);
+  }
+
   Future<void> loadData() async {
     String data = await rootBundle.loadString('assets/data.yaml');
     setState(() {
       chapters = loadYaml(data);
       chapters = chapters["Chapters"] as List? ?? [];
-      currentDialogs.add(chapters[currentChapter]["Diablocks"][0]);
+      addDialog(chapters[currentChapter]["Diablocks"][0]);
     });
     //check if the first diablock has answers
     if (chapters[currentChapter]['Diablocks'][0]["Answers"].length > 0) {
@@ -93,14 +100,9 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
             (element) => element['RefName'] == gotoDiablock,
             orElse: () => null);
 
-        if (result?['Answers'] == null) {
-          setState(() {
-            currentDialogs.clear();
-          });
-        }
         if (result != null) {
           setState(() {
-            currentDialogs.add(result);
+            addDialog(result);
             showContinue = true;
           });
           updateSpeakerImage(result["SpeakerImage"] ?? "");
@@ -109,11 +111,13 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
         }
       }
       //go to next chapter
-      else if (currentDialogs[currentDialogs.length - 1]["GoToDiablock"] ==
+      else if (ref.watch(store)['currentDialogs']
+              [ref.watch(store)['currentDialogs'].length - 1]["GoToDiablock"] ==
           "END") {
         setState(() {
+          ref.watch(store)['currentDialogs'].clear();
           currentChapter++;
-          currentDialogs.add(chapters[currentChapter]["Diablocks"][0]);
+          addDialog(chapters[currentChapter]["Diablocks"][0]);
           showContinue = true;
         });
         updateChapterName(chapters[currentChapter]["ChapterName"]);
@@ -126,12 +130,14 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
         YamlMap? result = block.firstWhere(
             (element) =>
                 element['RefName'] ==
-                currentDialogs[currentDialogs.length - 1]["GoToDiablock"],
+                ref.watch(store)['currentDialogs']
+                        [ref.watch(store)['currentDialogs'].length - 1]
+                    ["GoToDiablock"],
             orElse: () => null);
 
         if (result != null) {
           setState(() {
-            currentDialogs.add(result);
+            addDialog(result);
             if (result['Answers'] != null) {
               showContinue = false;
             } else {
@@ -172,39 +178,43 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
       ),
       width: MediaQuery.of(context).size.width * 0.35, // width of the thing
       height: MediaQuery.of(context).size.height - 20,
-      child: ListView(physics: const ScrollPhysics(), controller: scrollController, children: [
-        ...currentDialogs.map((diablock) {
-          return DialogBlock(
-            speakerName: diablock["Speaker"],
-            dialogText: diablock["Dialog"],
-            dialogChoices: diablock["Answers"] ?? [],
-            nextDialog: nextDialog,
-          );
-        }),
-        InkWell(
-            // continue bar
-            onTapUp: (TapUpDetails details) =>
-                {player.play(AssetSource("audio/click.mp3"))},
-            onTap: () => nextDialog(null),
-            child: showContinue
-                ? Container(
-                    alignment: Alignment.centerLeft,
-                    height: 40,
-                    margin: EdgeInsets.only(bottom: 100),
-                    decoration: const BoxDecoration(
-                      color: Color(0xff88230C),
-                    ),
-                    child: const Text(
-                      "Continue ►",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontFamily: "Arlt",
-                      ),
-                    ),
-                  )
-                : Gap(100))
-      ]),
+      child: ListView(
+          physics: const ScrollPhysics(),
+          controller: scrollController,
+          children: [
+            ...ref.watch(store)['currentDialogs']?.map((diablock) {
+              return DialogBlock(
+                  speakerName: diablock["Speaker"],
+                  dialogText: diablock["Dialog"],
+                  dialogChoices: diablock["Answers"] ?? [],
+                  nextDialog: nextDialog,
+                  isAns: diablock['isAnswered'] ?? false,
+                  currentAns: diablock['currentAnswer']);
+            }),
+            InkWell(
+                // continue bar
+                onTapUp: (TapUpDetails details) =>
+                    {player.play(AssetSource("audio/click.mp3"))},
+                onTap: () => nextDialog(null),
+                child: showContinue
+                    ? Container(
+                        alignment: Alignment.centerLeft,
+                        height: 40,
+                        margin: EdgeInsets.only(bottom: 100),
+                        decoration: const BoxDecoration(
+                          color: Color(0xff88230C),
+                        ),
+                        child: const Text(
+                          "Continue ►",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontFamily: "Arlt",
+                          ),
+                        ),
+                      )
+                    : Gap(100))
+          ]),
     );
   }
 }
