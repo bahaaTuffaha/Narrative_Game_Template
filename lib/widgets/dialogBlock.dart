@@ -1,44 +1,33 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/Choices.dart';
 import 'package:flutter_app/widgets/FinalAnswer.dart';
-import 'package:flutter_app/widgets/choices.dart';
 
 class DialogBlock extends StatefulWidget {
   final String speakerName;
   final String dialogText;
   final List dialogChoices;
+  final bool isAns;
+  final String currentAns;
   final void Function(dynamic) nextDialog;
 
-  DialogBlock(
-      {Key? key,
-      required this.speakerName,
-      required this.dialogText,
-      required this.dialogChoices,
-      required this.nextDialog})
-      : super(key: key);
+  DialogBlock({
+    Key? key,
+    required this.speakerName,
+    required this.dialogText,
+    required this.dialogChoices,
+    required this.nextDialog,
+    required this.isAns,
+    required this.currentAns,
+  }) : super(key: key);
 
   @override
   State<DialogBlock> createState() => _DialogBlockState();
 }
 
-class _DialogBlockState extends State<DialogBlock>
-    with AutomaticKeepAliveClientMixin {
-  bool isAnswered = false;
-  String currentAnswer = "";
-
-  void setFinalAnswer(String ans) {
-    setState(() {
-      currentAnswer = ans;
-      isAnswered = true;
-    });
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
+class _DialogBlockState extends State<DialogBlock> {
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,14 +58,13 @@ class _DialogBlockState extends State<DialogBlock>
             )
           ],
         )),
-        isAnswered
+        widget.isAns
             ? FinalAnswer(
-                finalAnswer: currentAnswer,
+                finalAnswer: widget.currentAns,
               )
             : Choices(
                 choices: widget.dialogChoices,
                 nextDialog: widget.nextDialog,
-                setFinal: setFinalAnswer,
               ),
       ],
     );
