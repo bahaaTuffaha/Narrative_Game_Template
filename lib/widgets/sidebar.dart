@@ -69,6 +69,13 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
     ref.read(store.notifier).state['currentDialogs'].add(newDialog);
   }
 
+  void resetDialogs() {
+    ref.read(store.notifier).state = {
+      ...ref.read(store.notifier).state,
+      'currentDialogs': [],
+    };
+  }
+
   Future<void> loadData() async {
     String data = await rootBundle.loadString('assets/data.yaml');
     setState(() {
@@ -90,68 +97,73 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
   }
 
   void nextDialog(var gotoDiablock) {
-    // debugPrint(chapters[currentChapter]["Diablocks"].runtimeType.toString() +
-    //     "test pelsea work");
-    try {
-      var block = chapters[currentChapter]["Diablocks"];
-      //has answers
-      if (gotoDiablock != null) {
-        YamlMap? result = block.firstWhere(
-            (element) => element['RefName'] == gotoDiablock,
-            orElse: () => null);
+    // try {
+    var block = chapters[currentChapter]["Diablocks"];
+    //has answers
+    if (gotoDiablock != null) {
+      YamlMap? result = block.firstWhere(
+          (element) => element['RefName'] == gotoDiablock,
+          orElse: () => null);
 
-        if (result != null) {
-          setState(() {
-            addDialog(result);
-            showContinue = true;
-          });
-          updateSpeakerImage(result["SpeakerImage"] ?? "");
-          updateBackImage(result["Background"] ?? "");
-          scrollToBottom();
-        }
-      }
-      //go to next chapter
-      else if (ref.watch(store)['currentDialogs']
-              [ref.watch(store)['currentDialogs'].length - 1]["GoToDiablock"] ==
-          "END") {
+      if (result != null) {
         setState(() {
-          ref.watch(store)['currentDialogs'].clear();
-          currentChapter++;
-          addDialog(chapters[currentChapter]["Diablocks"][0]);
+          addDialog(result);
           showContinue = true;
         });
-        updateChapterName(chapters[currentChapter]["ChapterName"]);
-        updateSpeakerImage(
-            chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
-        updateBackImage(
-            chapters[currentChapter]["Diablocks"][0]["Background"] ?? "");
-      } else {
-        //next to the GoToDiablock
-        YamlMap? result = block.firstWhere(
-            (element) =>
-                element['RefName'] ==
-                ref.watch(store)['currentDialogs']
-                        [ref.watch(store)['currentDialogs'].length - 1]
-                    ["GoToDiablock"],
-            orElse: () => null);
-
-        if (result != null) {
-          setState(() {
-            addDialog(result);
-            if (result['Answers'] != null) {
-              showContinue = false;
-            } else {
-              showContinue = true;
-            }
-          });
-          updateSpeakerImage(result["SpeakerImage"] ?? "");
-          updateBackImage(result["Background"] ?? "");
-          scrollToBottom();
-        }
+        updateSpeakerImage(result["SpeakerImage"] ?? "");
+        updateBackImage(result["Background"] ?? "");
+        scrollToBottom();
       }
-    } catch (e) {
-      debugPrint("error: " + e.toString());
     }
+    //go to next chapter
+    else if (ref.watch(store)['currentDialogs'].last["GoToDiablock"] == "END") {
+      debugPrint("before" + chapters[currentChapter]["Diablocks"].toString());
+      setState(() {
+        resetDialogs();
+        currentChapter++;
+      });
+      debugPrint(
+          "after clearing" + chapters[currentChapter]["Diablocks"].toString());
+
+      // debugPrint(chapters[currentChapter]["Diablocks"][0]['Dialog']);
+      setState(() {
+        addDialog(chapters[currentChapter]["Diablocks"][0]);
+      });
+      debugPrint("after cleaning and adding dialog" +
+          chapters[currentChapter]["Diablocks"].toString());
+      showContinue = true;
+
+      updateChapterName(chapters[currentChapter]["ChapterName"]);
+      updateSpeakerImage(
+          chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
+      updateBackImage(
+          chapters[currentChapter]["Diablocks"][0]["Background"] ?? "");
+    } else {
+      //next to the GoToDiablock
+      YamlMap? result = block.firstWhere(
+          (element) =>
+              element['RefName'] ==
+              ref.watch(store)['currentDialogs'].last["GoToDiablock"],
+          orElse: () => null);
+
+      if (result != null) {
+        // make sure it found the GoToDiablock
+        setState(() {
+          addDialog(result);
+          if (result['Answers'] != null) {
+            showContinue = false;
+          } else {
+            showContinue = true;
+          }
+        });
+        updateSpeakerImage(result["SpeakerImage"] ?? "");
+        updateBackImage(result["Background"] ?? "");
+        scrollToBottom();
+      }
+    }
+    // } catch (e) {
+    //   debugPrint("error: " + e.toString());
+    // }
   }
 
   void scrollToBottom() {
@@ -184,6 +196,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
           children: [
             ...ref.watch(store)['currentDialogs']?.map((diablock) {
               return DialogBlock(
+                  key: ObjectKey(diablock),
                   speakerName: diablock["Speaker"],
                   dialogText: diablock["Dialog"],
                   dialogChoices: diablock["Answers"] ?? [],

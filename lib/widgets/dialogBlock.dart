@@ -26,16 +26,6 @@ class DialogBlock extends StatefulWidget {
 }
 
 class _DialogBlockState extends State<DialogBlock> {
-  // bool isAnswered = false;
-  // String currentAnswer = "";
-
-  // void setFinalAnswer(String ans) {
-  //   setState(() {
-  //     currentAnswer = ans;
-  //     isAnswered = true;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Column(

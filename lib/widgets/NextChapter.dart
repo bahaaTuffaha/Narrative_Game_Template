@@ -3,13 +3,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/store/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NextChapter extends ConsumerWidget {
+class NextChapter extends ConsumerStatefulWidget {
   NextChapter({Key? key}) : super(key: key);
 
-  Widget build(BuildContext context, WidgetRef ref) {
+  @override
+  _NextChapterState createState() => _NextChapterState();
+}
+
+class _NextChapterState extends ConsumerState<NextChapter> {
+  double opacity = 0;
+  bool localChecker = true;
+
+  void start() {
+    fadeIn();
+    Future.delayed(Duration(milliseconds: 2500), () {
+      fadeOut();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void fadeIn() {
+    setState(() {
+      opacity = 1;
+    });
+  }
+
+  void fadeOut() {
+    setState(() {
+      opacity = 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (ref.watch(store)['chapterNameVisible'] && localChecker) {
+      setState(() {
+        Future.delayed(Duration(milliseconds: 500), () {
+          start();
+          setState(() {
+            localChecker = false;
+          });
+        });
+      });
+    }
+    if (ref.watch(store)['chapterNameVisible'] == false) {
+      setState(() {
+        localChecker = true;
+      });
+    }
     return ref.watch(store)['chapterNameVisible']
-        ? DelayedDisplay(
-            fadingDuration: const Duration(seconds: 1),
+        ? AnimatedOpacity(
+            duration: const Duration(seconds: 1),
+            opacity: opacity,
             child: Container(
               decoration: const BoxDecoration(color: Colors.black),
               child: Center(
