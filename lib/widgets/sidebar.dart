@@ -7,6 +7,7 @@ import 'package:flutter_app/widgets/dialogBlock.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:yaml/yaml.dart';
+import 'package:flutter_app/utils/convert.dart';
 
 class NarrativeBar extends ConsumerStatefulWidget {
   NarrativeBar({Key? key}) : super(key: key);
@@ -106,38 +107,44 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
           orElse: () => null);
 
       if (result != null) {
-        setState(() {
-          addDialog(result);
-          showContinue = true;
+        Future.delayed(
+            Duration(
+                milliseconds:
+                    convertSecondsToMilliseconds(result["Delay"] ?? 0)), () {
+          setState(() {
+            addDialog(result);
+            showContinue = true;
+          });
+          scrollToBottom();
+
+          updateSpeakerImage(result["SpeakerImage"] ?? "");
+          updateBackImage(result["Background"] ?? "");
         });
-        updateSpeakerImage(result["SpeakerImage"] ?? "");
-        updateBackImage(result["Background"] ?? "");
-        scrollToBottom();
       }
     }
     //go to next chapter
     else if (ref.watch(store)['currentDialogs'].last["GoToDiablock"] == "END") {
-      debugPrint("before" + chapters[currentChapter]["Diablocks"].toString());
+      // debugPrint("before" + chapters[currentChapter]["Diablocks"].toString());
       setState(() {
         resetDialogs();
         currentChapter++;
       });
-      debugPrint(
-          "after clearing" + chapters[currentChapter]["Diablocks"].toString());
+      Future.delayed(
+          Duration(
+              milliseconds: convertSecondsToMilliseconds(
+                  chapters[currentChapter]["Diablocks"][0]["Delay"] ?? 0)), () {
+        setState(() {
+          addDialog(chapters[currentChapter]["Diablocks"][0]);
+        });
 
-      // debugPrint(chapters[currentChapter]["Diablocks"][0]['Dialog']);
-      setState(() {
-        addDialog(chapters[currentChapter]["Diablocks"][0]);
+        showContinue = true;
+
+        updateChapterName(chapters[currentChapter]["ChapterName"]);
+        updateSpeakerImage(
+            chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
+        updateBackImage(
+            chapters[currentChapter]["Diablocks"][0]["Background"] ?? "");
       });
-      debugPrint("after cleaning and adding dialog" +
-          chapters[currentChapter]["Diablocks"].toString());
-      showContinue = true;
-
-      updateChapterName(chapters[currentChapter]["ChapterName"]);
-      updateSpeakerImage(
-          chapters[currentChapter]["Diablocks"][0]["SpeakerImage"] ?? "");
-      updateBackImage(
-          chapters[currentChapter]["Diablocks"][0]["Background"] ?? "");
     } else {
       //next to the GoToDiablock
       YamlMap? result = block.firstWhere(
@@ -148,22 +155,24 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
 
       if (result != null) {
         // make sure it found the GoToDiablock
-        setState(() {
-          addDialog(result);
-          if (result['Answers'] != null) {
-            showContinue = false;
-          } else {
-            showContinue = true;
-          }
+        Future.delayed(
+            Duration(
+                milliseconds:
+                    convertSecondsToMilliseconds(result["Delay"] ?? 0)), () {
+          setState(() {
+            addDialog(result);
+            if (result['Answers'] != null) {
+              showContinue = false;
+            } else {
+              showContinue = true;
+            }
+          });
+          scrollToBottom();
+          updateSpeakerImage(result["SpeakerImage"] ?? "");
+          updateBackImage(result["Background"] ?? "");
         });
-        updateSpeakerImage(result["SpeakerImage"] ?? "");
-        updateBackImage(result["Background"] ?? "");
-        scrollToBottom();
       }
     }
-    // } catch (e) {
-    //   debugPrint("error: " + e.toString());
-    // }
   }
 
   void scrollToBottom() {
