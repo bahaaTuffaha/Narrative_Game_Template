@@ -8,4 +8,5 @@ final store = StateProvider<Map<String, dynamic>>((ref) => {
       'currentChapterName': "Start",
       'chapterNameVisible': true,
       'health': 100,
+      'customVariables': [],
     });
