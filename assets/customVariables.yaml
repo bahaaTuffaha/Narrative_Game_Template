@@ -1,13 +1,16 @@
 customVariables:
   - label: "ActionPoints"
-    value: 1
+    value: 2
     color: "#FF0000"
     shortForm: "AP"
-  - label: "Option 2"
-    value: 2
+  - label: "Health"
+    value: 100
     color: "#00FF00"
-    shortForm: "Opt 2"
-  - label: "Option 3"
-    value: 3
-    color: "#0000FF"
-    shortForm: "Opt 3"
+    shortForm: "HP"
+
+globalConditions:
+  #cases: endgame,restart,restartCh,finished
+  #operators: gt,lt,gte,lte,equal
+  - case: "endgame"
+    operator: "lte"
+    value: 0

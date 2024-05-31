@@ -7,6 +7,5 @@ final store = StateProvider<Map<String, dynamic>>((ref) => {
       'path': [], // history of your choices
       'currentChapterName': "Start",
       'chapterNameVisible': true,
-      'health': 100,
       'customVariables': [],
     });
