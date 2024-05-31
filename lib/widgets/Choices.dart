@@ -12,7 +12,7 @@ class Choices extends ConsumerWidget {
     void setFinal(String currentAns) {
       final currentState = ref.read(store.notifier).state;
       final currentDialogs = List<dynamic>.from(currentState['currentDialogs']);
-      final lastIndex = currentDialogs.length - 2;
+      final lastIndex = currentDialogs.length - 1;
 
       if (lastIndex >= 0) {
         currentDialogs[lastIndex]['currentAnswer'] = currentAns;
