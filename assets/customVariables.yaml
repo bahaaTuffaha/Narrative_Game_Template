@@ -13,4 +13,5 @@ globalConditions:
   #operators: gt,lt,gte,lte,equal
   - case: "endgame"
     operator: "lte"
-    value: 0
+    variableName: "Health"
+    compareValue: 0

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/store/riverpod.dart';
+import 'package:flutter_app/utils/check_custom_variables.dart';
 import 'package:flutter_app/widgets/dialogBlock.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -77,12 +78,122 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
     };
   }
 
+  void addCustomVariable(label, value, color, shortForm) {
+    Map newVariable = {};
+    newVariable['label'] = label;
+    newVariable['value'] = value;
+    newVariable['color'] = color;
+    newVariable['shortForm'] = shortForm;
+    ref.read(store.notifier).state['customVariables'].add(newVariable);
+  }
+
+  void addGlobalVariable(myCase, operator, variableName, compareValue) {
+    Map newVariable = {};
+    newVariable['case'] = myCase;
+    newVariable['operator'] = operator;
+    newVariable['variableName'] = variableName;
+    newVariable['compareValue'] = compareValue;
+    ref.read(store.notifier).state['globalConditions'].add(newVariable);
+  }
+
+  void customVariableInit(YamlList variableList) {
+    for (final variable in variableList) {
+      addCustomVariable(variable['label'], variable['value'], variable['color'],
+          variable['shortForm']);
+    }
+  }
+
+  void globalConditionsInit(YamlList conditions) {
+    for (final variable in conditions) {
+      addGlobalVariable(variable['case'], variable['operator'],
+          variable['variableName'], variable['compareValue']);
+    }
+  }
+
+  void _variableChangeChecker(Map dialog) {
+    // Check if dialog contains 'VariableChanges' key
+    if (dialog.containsKey('VariableChanges')) {
+      for (final variable in dialog['VariableChanges']) {
+        final matchingVariable = ref.watch(store)['customVariables'].firstWhere(
+              (vari) => vari['label'] == variable['varName'],
+              orElse: () => null,
+            );
+
+        if (matchingVariable != null) {
+          final updatedVariables =
+              ref.read(store.notifier).state['customVariables'].toList();
+          for (var i = 0; i < updatedVariables.length; i++) {
+            if (updatedVariables[i] == matchingVariable) {
+              updatedVariables[i] = {
+                ...matchingVariable,
+                'value': operations(
+                  variable['varOperation'],
+                  matchingVariable['value'].toDouble(),
+                  variable['varValue'].toDouble(),
+                ),
+              };
+              break;
+            }
+          }
+          ref.read(store.notifier).state = {
+            ...ref.read(store.notifier).state,
+            'customVariables': updatedVariables,
+          };
+        }
+      }
+    }
+
+    debugPrint(ref.watch(store)['customVariables'].toString());
+  }
+
+  bool _globValueCheck(dynamic globalConds, int index) {
+    Map matchingVariable = ref.watch(store)['customVariables'].firstWhere(
+          (vari) => vari['label'] == globalConds[index]["variableName"],
+          orElse: () => null,
+        );
+    return checkOperation(globalConds[index]["operator"],
+        matchingVariable["value"], globalConds[index]["compareValue"]);
+  }
+
+  void _globalConditionChecker() {
+    final globalConds =
+        ref.read(store.notifier).state['globalConditions'].toList();
+    for (var i = 0; i < globalConds.length; i++) {
+      switch (globalConds[i]['case']) {
+        case 'endgame':
+          if (_globValueCheck(globalConds, i)) {
+            //GameOver
+          }
+          break;
+        case 'restart':
+          if (_globValueCheck(globalConds, i)) {}
+          break;
+        case 'restartCh':
+          if (_globValueCheck(globalConds, i)) {}
+          break;
+        case 'finished':
+          if (_globValueCheck(globalConds, i)) {}
+          break;
+        default:
+      }
+    }
+  }
+
   Future<void> loadData() async {
     String data = await rootBundle.loadString('assets/data.yaml');
+    String variables =
+        await rootBundle.loadString('assets/customVariables.yaml');
     setState(() {
       chapters = loadYaml(data);
       chapters = chapters["Chapters"] as List? ?? [];
       addDialog(chapters[currentChapter]["Diablocks"][0]);
+      dynamic customVars = loadYaml(variables);
+
+      customVariableInit(customVars['customVariables']);
+      globalConditionsInit(customVars['globalConditions']);
+      _globalConditionChecker();
+
+      debugPrint(ref.watch(store)['customVariables'].toString());
     });
     //check if the first diablock has answers
     if (chapters[currentChapter]['Diablocks'][0]["Answers"].length > 0) {
@@ -107,6 +218,7 @@ class _NarrativeBarState extends ConsumerState<NarrativeBar> {
           orElse: () => null);
 
       if (result != null) {
+        _variableChangeChecker(result); //
         Future.delayed(
             Duration(
                 milliseconds:

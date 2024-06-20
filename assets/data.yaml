@@ -19,6 +19,10 @@ Chapters:
         Background: *background1
         Sound: ""
         Delay: 3.0
+        VariableChanges:
+          - varName: "ActionPoints"
+            varOperation: "+"
+            varValue: 1
         GoToDiablock: "offering"
       - RefName: "blueWatch"
         Speaker: "bahaa"

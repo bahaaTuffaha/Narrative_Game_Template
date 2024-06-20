@@ -37,7 +37,7 @@ class Choices extends ConsumerWidget {
                           "GoToDiablock"]); //storing the destiny of our player.
 
                       //print da data
-                      debugPrint(ref.watch(store)['path'].toString());
+                      // debugPrint(ref.watch(store)['path'].toString());
                     }(),
                 child: Text(choice["Text"]));
           }).toList()),
